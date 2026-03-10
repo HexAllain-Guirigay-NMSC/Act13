@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity 13 - MSIT 114</title>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap");
+
+    :root{
+      --white:#fff;
+      --darkblue:#1b4965;
+      --lightblue:#edf2f4;
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:50px 0 120px;
+      font-family:"Noto Sans", sans-serif;
+      background:#ffffff;
+    }
+
+    .container{
+      max-width:1400px;
+      padding:0 15px;
+      margin:0 auto;
+    }
+
+    h1{
+      font-size:1.6rem;
+      margin-bottom:10px;
+      color:#111;
+    }
+
+    p.subtitle{
+      color:#444;
+      margin-bottom:10px;
+    }
+
+    #loading{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      margin:60px 0;
+      gap:15px;
+    }
+
+    .loader{
+      width:60px;
+      height:60px;
+      border:6px solid #dbe7ee;
+      border-top:6px solid var(--darkblue);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+    }
+
+    @keyframes spin{
+      from{ transform:rotate(0deg); }
+      to{ transform:rotate(360deg); }
+    }
+
+    .loading-text{
+      font-size:15px;
+      color:var(--darkblue);
+      font-weight:700;
+    }
+
+    .table-wrapper{
+      overflow-x:auto;
+      display:none;
+    }
+
+    .table-wrapper::-webkit-scrollbar{
+      height:8px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb{
+      background:var(--darkblue);
+      border-radius:40px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track{
+      background:var(--white);
+      border-radius:40px;
+    }
+
+    .table-wrapper table{
+      width:100%;
+      margin:30px 0 20px;
+      border-collapse:collapse;
+      text-align:center;
+    }
+
+    .table-wrapper table th,
+    .table-wrapper table td{
+      padding:12px 10px;
+      min-width:130px;
+      vertical-align:middle;
+    }
+
+    .table-wrapper table th{
+      color:var(--white);
+      background:var(--darkblue);
+    }
+
+    .table-wrapper table tbody tr:nth-of-type(even) > *{
+      background:var(--lightblue);
+    }
+
+    .user-photo{
+      width:120px;
+      height:120px;
+      object-fit:cover;
+      border-radius:8px;
+      border:2px solid #ccc;
+    }
+
+    .table-credits{
+      font-size:12px;
+      margin-top:10px;
+      display:none;
+    }
+
+    #errorMessage{
+      display:none;
+      margin-top:20px;
+      color:#b00020;
+      font-weight:700;
+      text-align:center;
+    }
+
+    footer{
+      text-align:center;
+      margin-top:30px;
+      font-size:14px;
+      color:#333;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Users Information Table</h1>
+    <p class="subtitle">Activity 13 - MSIT 114</p>
+
+    <div id="loading">
+      <div class="loader"></div>
+      <div class="loading-text">Loading user data...</div>
+    </div>
+
+    <div class="table-wrapper" id="tableWrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Picture</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Address</th>
+            <th>Country</th>
+            <th>Zip</th>
+          </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+
+    <p class="table-credits" id="tableCredits">
+      Data retrieved from
+      <a href="https://fake-json-api.mock.beeceptor.com/users" target="_blank">
+        fake-json-api.mock.beeceptor.com/users
+      </a>
+    </p>
+
+    <p id="errorMessage">Failed to load data. Please try again.</p>
+  </div>
+
+  <footer>
+    Copyright © Activity 13 - MSIT 114
+  </footer>
+
+  <script>
+    const myData = {
+      id: 11,
+      name: "Hex Allain Guirigay",
+      username: "SkyXD23",
+      email: "hexallain.guirigay@nmsc.edu.ph",
+      company: "Schools Division Office of Zamboanga del Sur",
+      address: "Dao, Pagadian City",
+      zip: "7016",
+      state: "Western Mindanao",
+      country: "Philippines",
+      phone: "09657289193",
+      photo: "profile.jpg"
+    };
+
+    const table = document.getElementById("userTable");
+    const loading = document.getElementById("loading");
+    const tableWrapper = document.getElementById("tableWrapper");
+    const tableCredits = document.getElementById("tableCredits");
+    const errorMessage = document.getElementById("errorMessage");
+
+    function createRow(photo, id, name, email, company, address, country, zip){
+      return `
+        <tr>
+          <td><img src="${photo}" alt="${name}" class="user-photo"></td>
+          <td>${id}</td>
+          <td>${name}</td>
+          <td>${email}</td>
+          <td>${company}</td>
+          <td>${address}</td>
+          <td>${country}</td>
+          <td>${zip}</td>
+        </tr>
+      `;
+    }
+
+    fetch("https://fake-json-api.mock.beeceptor.com/users")
+      .then(response => response.json())
+      .then(data => {
+        let allRows = "";
+
+        data.forEach(user => {
+          allRows += createRow(
+            user.photo || "https://via.placeholder.com/120",
+            user.id,
+            user.name || "N/A",
+            user.email || "N/A",
+            user.company || "N/A",
+            user.address || "N/A",
+            user.country || "N/A",
+            user.zip || "N/A"
+          );
+        });
+
+        allRows += createRow(
+          myData.photo,
+          myData.id,
+          myData.name,
+          myData.email,
+          myData.company,
+          myData.address,
+          myData.country,
+          myData.zip
+        );
+
+        table.innerHTML = allRows;
+        loading.style.display = "none";
+        tableWrapper.style.display = "block";
+        tableCredits.style.display = "block";
+      })
+      .catch(error => {
+        loading.style.display = "none";
+        errorMessage.style.display = "block";
+        console.log("Error fetching data:", error);
+      });
+  </script>
+
+</body>
+</html>

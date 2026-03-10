@@ -188,81 +188,97 @@
   </footer>
 
   <script>
-    const myData = {
-      id: 11,
-      name: "Hex Allain Guirigay",
-      username: "SkyXD23",
-      email: "hexallain.guirigay@nmsc.edu.ph",
-      company: "Schools Division Office of Zamboanga del Sur",
-      address: "Dao, Pagadian City",
-      zip: "7016",
-      state: "Western Mindanao",
-      country: "Philippines",
-      phone: "09657289193",
-      photo: "profile.jpg"
-    };
+  const myData = {
+    id: 11,
+    name: "Hex Allain Guirigay",
+    username: "SkyXD23",
+    email: "hexallain.guirigay@nmsc.edu.ph",
+    company: "Schools Division Office of Zamboanga del Sur",
+    address: "Dao, Pagadian City",
+    zip: "7016",
+    state: "Western Mindanao",
+    country: "Philippines",
+    phone: "09657289193",
+    photo: "profile.jpg"
+  };
 
-    const table = document.getElementById("userTable");
-    const loading = document.getElementById("loading");
-    const tableWrapper = document.getElementById("tableWrapper");
-    const tableCredits = document.getElementById("tableCredits");
-    const errorMessage = document.getElementById("errorMessage");
+  const table = document.getElementById("userTable");
+  const loading = document.getElementById("loading");
+  const tableWrapper = document.getElementById("tableWrapper");
+  const tableCredits = document.getElementById("tableCredits");
+  const errorMessage = document.getElementById("errorMessage");
 
-    function createRow(photo, id, name, email, company, address, country, zip){
-      return `
-        <tr>
-          <td><img src="${photo}" alt="${name}" class="user-photo"></td>
-          <td>${id}</td>
-          <td>${name}</td>
-          <td>${email}</td>
-          <td>${company}</td>
-          <td>${address}</td>
-          <td>${country}</td>
-          <td>${zip}</td>
-        </tr>
-      `;
-    }
+  function createRow(photo, id, name, email, company, address, country, zip){
+    return `
+      <tr>
+        <td><img src="${photo}" alt="${name}" class="user-photo"></td>
+        <td>${id}</td>
+        <td>${name}</td>
+        <td>${email}</td>
+        <td>${company}</td>
+        <td>${address}</td>
+        <td>${country}</td>
+        <td>${zip}</td>
+      </tr>
+    `;
+  }
 
-    fetch("https://fake-json-api.mock.beeceptor.com/users")
-      .then(response => response.json())
-      .then(data => {
-        let allRows = "";
+  fetch("https://fake-json-api.mock.beeceptor.com/users")
+    .then(response => response.json())
+    .then(data => {
 
-        data.forEach(user => {
-          allRows += createRow(
-            user.photo || "https://via.placeholder.com/120",
-            user.id,
-            user.name || "N/A",
-            user.email || "N/A",
-            user.company || "N/A",
-            user.address || "N/A",
-            user.country || "N/A",
-            user.zip || "N/A"
-          );
-        });
+      let allRows = "";
+
+      data.forEach(user => {
+
+        let cleanName = user.name || "N/A";
+
+        /* REMOVE API ERROR TEXT */
+        cleanName = cleanName.replace(
+          "Attribute Error: person.astName is not supported",
+          ""
+        ).trim();
 
         allRows += createRow(
-          myData.photo,
-          myData.id,
-          myData.name,
-          myData.email,
-          myData.company,
-          myData.address,
-          myData.country,
-          myData.zip
+          user.photo || "https://via.placeholder.com/120",
+          user.id,
+          cleanName,
+          user.email || "N/A",
+          user.company || "N/A",
+          user.address || "N/A",
+          user.country || "N/A",
+          user.zip || "N/A"
         );
 
-        table.innerHTML = allRows;
-        loading.style.display = "none";
-        tableWrapper.style.display = "block";
-        tableCredits.style.display = "block";
-      })
-      .catch(error => {
-        loading.style.display = "none";
-        errorMessage.style.display = "block";
-        console.log("Error fetching data:", error);
       });
-  </script>
+
+      /* APPEND YOUR DATA AT THE END */
+
+      allRows += createRow(
+        myData.photo,
+        myData.id,
+        myData.name,
+        myData.email,
+        myData.company,
+        myData.address,
+        myData.country,
+        myData.zip
+      );
+
+      table.innerHTML = allRows;
+
+      loading.style.display = "none";
+      tableWrapper.style.display = "block";
+      tableCredits.style.display = "block";
+
+    })
+    .catch(error => {
+      loading.style.display = "none";
+      errorMessage.style.display = "block";
+      console.log("Error fetching data:", error);
+    });
+</script>
 
 </body>
+
 </html>
